@@ -1,0 +1,33 @@
+# ── Python ────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# ── Node / React ──────────────────────────────
+node_modules/
+dashboard/build/
+*.log
+npm-debug.log*
+
+# ── Environment & Secrets ─────────────────────
+.env
+*.env.local
+*.env.production
+
+# ── Database ──────────────────────────────────
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# ── OS ────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Docker ────────────────────────────────────
+.docker/
