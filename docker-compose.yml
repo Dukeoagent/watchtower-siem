@@ -1,0 +1,43 @@
+# ┌─────────────────────────────────────────────────────────────────────────┐
+# │  WatchTower SIEM — Docker Compose Stack                                 │
+# │  Start everything with:  docker-compose up --build                      │
+# │  Dashboard: http://localhost:3000                                       │
+# │  API docs:  http://localhost:8000/docs                                  │
+# └─────────────────────────────────────────────────────────────────────────┘
+
+services:
+
+  # ── FastAPI backend (alert ingestion, enrichment, REST API) ──────────────
+  backend:
+    build: ./backend
+    container_name: watchtower-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist the SQLite database between container rebuilds.
+      - ./data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:////app/data/watchtower.db
+      - SEED_DEMO=1
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - EMAIL_FROM=${EMAIL_FROM:-watchtower@localhost}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+
+  # ── React dashboard (built into static files, served by nginx) ───────────
+  dashboard:
+    build: ./dashboard
+    container_name: watchtower-dashboard
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
